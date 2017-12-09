@@ -102,17 +102,14 @@ player_selection_data$value <- player_selection_data$Salary_clean / player_selec
 # runs inside the $1.5M spend cap can be achieved by combining Carlos Pena ($0.3M) and Jeremy
 # Giambi ($1.065M)
 
-# I'm not looking for my own method for automatically calculating the combinations
+# I'm now looking for my own method for automatically calculating the combinations
 # of salary and runs scored. This would be useful if the list of players was extremely
 # long, instead of just being five players.
-salary_RS <- function(Salary1, Salary2){
-  combined_salary <- Salary1 + Salary2
-  # combined_runs <- RS1 + RS2
-}
 
-unlist(lapply(player_selection_data$Salary_clean, sum, player_selection_data$Salary_clean))
-
+# This use of the 'combn' function for creating permutations works quite
+# well, except when it came to pasting names together.
 combn(player_selection_data$Player.Name, 2, FUN = paste)
+do.call(paste0, expand.grid(player_selection_data$Player.Name, player_selection_data$Player.Name))
 combn(player_selection_data$Salary_clean, 2, FUN = sum)
 combn(player_selection_data$RS, 2, FUN = sum)
 
@@ -126,12 +123,23 @@ colnames(rs_comb) <- c("rs_1", "rs_2")
 anal_comb <- cbind(players_comb, salary_comb, rs_comb)
 View(anal_comb)
 
-# Next step - calculate the combined salaries and runs scored and then start ordering and filtering.
+anal_comb$Salary_comb <- anal_comb$Salary_1 + anal_comb$Salary_2
+anal_comb$rs_comb <- anal_comb$rs_1 + anal_comb$rs_2
+
+anal_filter <- anal_comb %>% filter(Salary_comb <= 1500000) %>% arrange(desc(rs_comb))
+View(anal_filter)
+
+
 
 ##################################################
 # Quick Question - Playoffs
 # https://courses.edx.org/courses/course-v1:MITx+15.071x+2T2017/courseware/f8d71d64418146f18a066d7f0379678c/6324edb8a22c4e35b937490647bfe203/?child=first
 
 teamRank = c(1,2,3,3,4,4,4,4,5,5)
-
-
+wins2012 <- c(94, 88, 95, 88, 93, 94, 98, 97, 93, 94)
+wins2013 <- c(97, 97, 92, 93, 92, 96, 94, 96, 92, 90)
+length(wins2013)
+wins_table <- cbind(teamRank, wins2012, wins2013)
+cor(wins_table)
+cor(teamRank, wins2012)
+cor(teamRank, wins2013)
