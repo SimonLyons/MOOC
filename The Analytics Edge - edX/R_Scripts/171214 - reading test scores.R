@@ -55,7 +55,9 @@ str(pisa2009train)
 pisa2009train$raceeth = relevel(pisa2009train$raceeth, "White")
 pisa2009test$raceeth = relevel(pisa2009test$raceeth, "White")
 
-lmScore <- lm(readingScore ~ ., data = pisa2009train)
+# It's apparently for the test set data to either specify "newdata = ...." or to just
+# insert the name of the data.
+lmScore <- lm(readingScore ~ ., pisa2009train)
 summary(lmScore)
 
 # Problem 3.2 - Computing the root-mean squared error of the model
@@ -75,21 +77,20 @@ readingscoredelta <- lmScore$coefficients[2] * (11 -9)
 
 # Problem 4.1 - Predicting on unseen data
 # What is the range between the maximum and minimum predicted reading score on the TEST set?
-predTest <- predict(lmScore, data = pisa2009test)
+predTest <- predict(lmScore, newdata = pisa2009test)
 summary(predTest)
 diff(range(predTest))
 # Answer: 303.6437, which differs from the 284.5 on the EdX website. My max and min are different.
-
-###### Right-o: I'm not sure exactly what's going on here. The above isn't correct and
-# below I'm looking at having a different length of 'predTest' to the actual test sample length...
 
 # Problem 4.2 - Test set SSE and RMSE
 # What is the sum of squared errors (SSE) of lmScore on the testing set?
 SSE_test <- sum((predTest - pisa2009test$readingScore)^2)
 # What is the root-mean squared error (RMSE) of lmScore on the testing set?
-SST_test <- sum((mean(NBA$PTS) - NBA_test$PTS)^2)
+SST_test <- sum((mean(pisa2009train$readingScore) - pisa2009test$readingScore)^2)
 R2 <- 1 - SSE_test/SST_test
+RMSE <- sqrt(mean((predTest-pisa2009test$readingScore)^2))
 
-length(predTest)
-length(pisa2009test$readingScore)
-nrow(pisa2009test)
+# Problem 4.3 - Baseline prediction and test-set SSE
+# What is the predicted test score used in the baseline model? 
+# Remember to compute this value using the training set and not the test set.
+baseline = mean(pisa2009train$readingScore)
