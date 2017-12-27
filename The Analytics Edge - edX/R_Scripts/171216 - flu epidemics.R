@@ -108,3 +108,9 @@ FluTest$ILILag2[2] <- FluTrain$ILI[FluTrain_nrow]
 
 # Problem 5.4 - Evaluating the Time Series Model in the Test Set
 # Obtain test set predictions of the ILI variable from the FluTrend2 model
+PredTest2 <- exp(predict(FluTrend2, newdata = FluTest))
+
+FluTest2_residuals <- abs(FluTest$ILI - PredTest2)
+
+SSE_Flu2 <- sum(FluTest2_residuals^2)
+RMSE_FluTest2 <- sqrt(SSE_Flu2/nrow(FluTest))
