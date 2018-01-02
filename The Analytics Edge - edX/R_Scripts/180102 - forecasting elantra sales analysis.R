@@ -57,4 +57,37 @@ elantra_model3 <- lm(ElantraSales ~ Unemployment + CPI_all + CPI_energy + Querie
 summary(elantra_model3)
 
 # Problem 5.1 - Multicolinearity
+# Which of the following variables is CPI_energy highly correlated with?
+cor(elantra_train$Unemployment, elantra_train$CPI_all)
+cor(elantra_train[ , c("Unemployment","Month","Queries","CPI_energy","CPI_all")])
+
+# Problem 6.1 - A Reduced Model
+# Remove the variable with the highest p-value. Repeat this until there are no variables that are insignificant. 
+# Which variables, and in what order, are removed by this process?
+elantra_model4 <- lm(ElantraSales ~ Unemployment + CPI_all + CPI_energy + Month_as_factor, data = elantra_train)
+summary(elantra_model4)
+
+#  Problem 6.2 - Test Set Predictions
+# Using the model from Problem 6.1, make predictions on the test set. 
+# What is the sum of squared errors of the model on the test set?
+elantra_test$Month_as_factor <- as.factor(elantra_test$Month)
+View(elantra_test)
+model4_test_predict <- predict(elantra_model4, newdata = elantra_test)
+model4_SSE <- sum((model4_test_predict - elantra_test$ElantraSales)^2)
+
+# Problem 6.3 - Comparing to a Baseline
+# What would the baseline method predict for all observations in the test set?
+mean(elantra_train$ElantraSales)
+
+# Problem 6.4 - Test Set R-Squared
+# What is the test set R-Squared?
+model4_SST <- sum((mean(elantra_train$ElantraSales) - elantra_test$ElantraSales)^2)
+model4_R2 <- 1 - model4_SSE / model4_SST
+
+# Problem 6.5 - Absolute Errors
+# What is the largest absolute error that we make in our test set predictions?
+which.max(abs(elantra_test$ElantraSales - model4_test_predict))
+
+# I'm now up to Unit 3
+# https://courses.edx.org/courses/course-v1:MITx+15.071x+2T2017/courseware/5893e4c5afb74898b8e7d9773e918208/030bf0a7275744f4a3f6f74b95169c04/?child=first
 
